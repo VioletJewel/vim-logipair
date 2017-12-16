@@ -14,7 +14,7 @@ vim-logipair
 * press `{<cr>`
 * press `(<cr>`
 * press `[<cr>`
-    - note that these is an `inoremap` so you should do it rather quickly
+    - note that these are `inoremap`s, so you should do it rather quickly
 
 The above expansions do different things depending on the following text.
 
