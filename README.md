@@ -7,7 +7,7 @@ vim-logipair
     - for real! check it out!
 
 * it just does the right thing
-    - see use cases below
+    - see **how it works** below
 
 ## how it works
 
@@ -16,7 +16,7 @@ vim-logipair
 * press `[<cr>`
     - note that these are `inoremap`s, so you should do it rather quickly
 
-The above expansions do different things depending on the following text.
+The above expansions do different things depending on the text following the cursor (if any follows).
 
 * if the following text has a closing pair (defaults: `)`, `}`, `]`) immediately after the cursor:
     - `({|)` (for example) becomes:
@@ -59,7 +59,7 @@ let g:logipair_matches = {
 
 ## not working right?
 
-* if it's not working as you'd epect, leave an issue! That way I can improve it for myself and for you too!
+* if it's not working as you'd expect, leave an issue! That way I can improve it for myself and for you too!
 
 * you can do better? kay; fork it.
 
