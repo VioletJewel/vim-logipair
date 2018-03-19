@@ -3,22 +3,30 @@ vim-logipair
 
 ###### super simple pair expansion that just does the right thing
 
-* it's only 20 lines of code!
-    - for real! check it out!
-
-* it just does the right thing
-    - see **how it works** below
-
 ## how it works
 
-* press `{<cr>`
-* press `(<cr>`
-* press `[<cr>`
-    - note that these are `inoremap`s, so you should do it rather quickly
+Logipair uses `&matchpairs` to logically expand pairs when pressing `<cr>`. The undo for this expansion is atomic as well!
+
+Also, for ease of editing, it allows `<tab>` to complete the pair just before the cursor and intelligently adds spaces in pairs.
 
 The above expansions do different things depending on the text following the cursor (if any follows).
 
-* if the following text has a closing pair (defaults: `)`, `}`, `]`) immediately after the cursor:
+## examples
+
+#### simple pair expansion
+
+If there is **no** text after the cursor:
+    - `function() {|` becomes (with `autoindent`, `smartindent`, etc enabled):
+
+```
+function() {
+    |
+}
+```
+
+#### inside pair pair expansion
+
+If the following text has a closing pair (examples: `)`, `}`, `]`) immediately after the cursor:
     - `({|)` (for example) becomes:
 
 ```
@@ -27,14 +35,7 @@ The above expansions do different things depending on the text following the cur
 })
 ```
 
-* if there is **no** text after the cursor:
-    - `{|` becomes (with `autoindent`, `smartindent`, etc enabled):
-
-```
-{
-    |
-}
-```
+#### trailing text pair expansion
 
 * if there **is** text after the cursor (not starting with a closing pair):
     - `function() {|console.log("hi");` becomes:
@@ -47,21 +48,21 @@ function() {
 
 ## configuration
 
-* defaults:
+* global:
 
 ```vim
-let g:logipair_matches = {
-    \ '{': '}',
-    \ '[': ']',
-    \ '(': ')'
-\}
+set matchpairs=(:),{:},[:],<:>
+```
+
+* filetype:
+
+```vim
+autocmd FileType *.foo setlocal matchpairs=(:),{:},[:],<:>
 ```
 
 ## not working right?
 
 * if it's not working as you'd expect, leave an issue! That way I can improve it for myself and for you too!
-
-* you can do better? kay; fork it.
 
 ---
 

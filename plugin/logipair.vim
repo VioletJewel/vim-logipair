@@ -4,25 +4,69 @@ if exists('g:logipair')
 endif
 let g:logipair = 1
 
-if (exists('g:logipair_matches') && type(g:logipair_matches) == v:t_dict)
-    let s:pair_match = g:logipair_matches
-else
-    let s:pair_match = {
-        \ '{': '}',
-        \ '[': ']',
-        \ '(': ')'
-    \}
-endif
-
-function! HandlePairExpansion(leftPair)
-    let l:el = getline('.')[col('.')-1:]
-    if (match(l:el, '^\s*\('.join(extend(values(s:pair_match), [',']), '\|').'\)') != -1)
-        return a:leftPair."\<cr>".s:pair_match[a:leftPair]."\<esc>O"
+function! LogiPairCr()
+    let l:cline = getline('.')
+    let l:ccol = col('.')
+    " char before cursor (maybe a left pair)
+    let l:left_pair = l:cline[l:ccol-2]
+    " pair matches based on &matchpairs
+    let l:pair_matches = {}
+    let l:mps = split(&matchpairs, ',')
+    " sort &matchpairs into a dict in l:pair_matches
+    for l:mp in l:mps
+        let l:mp = split(l:mp, ':')
+        let l:pair_matches[l:mp[0]] = l:mp[1]
+    endfor
+    " return <cr> if a left-pair not to left of cursor
+    if !has_key(l:pair_matches, l:left_pair)
+        return "\<cr>"
+    endif
+    let l:inside_pair = 0
+    let l:line = l:cline[: l:ccol]
+    let l:i = 0
+    while (l:i < len(l:line))
+        let l:ch = l:line[l:i]
+        if has_key(l:pair_matches, l:ch)
+            let l:inside_pair += 1
+        elseif (index(values(l:pair_matches), l:ch) > -1)
+            let l:inside_pair -= 1
+        endif
+        let l:i += 1
+    endwhile
+    if l:inside_pair
+        return "\<cr>".l:pair_matches[l:left_pair]."\<esc>O"
     else
-        return a:leftPair."\<cr>\<esc>o".s:pair_match[a:leftPair]."\<esc>-:call feedkeys('\<c-r>=col('$')==1?'cc':'i'\<cr>')\<cr>"
+        return "\<cr>\<esc>o".l:pair_matches[l:left_pair]."\<esc>-:call feedkeys('\<c-r>=col('$')==1?'cc':'i'\<cr>')\<cr>"
     endif
 endfunction
 
-for leftPair in keys(s:pair_match)
-    exe "inoremap <silent> ".leftPair."<cr> <c-r>=HandlePairExpansion('".leftPair."')<cr>"
-endfor
+function! LogiPairTab()
+    let l:cline = getline('.')
+    let l:ccol = col('.')
+    " char before cursor (maybe a left pair)
+    let l:left_pair = l:cline[l:ccol-2]
+    " pair matches based on &matchpairs
+    let l:pair_matches = {}
+    let l:mps = split(&matchpairs, ',')
+    " sort &matchpairs into a dict in l:pair_matches
+    for l:mp in l:mps
+        let l:mp = split(l:mp, ':')
+        let l:pair_matches[l:mp[0]] = l:mp[1]
+    endfor
+    " return <tab> if a left-pair not to left of cursor
+    " otherwise, return the closing pair
+    if has_key(l:pair_matches, l:left_pair)
+        " if current char under cursor is closing pair, pad spaces
+        " otherwise, add closing pair
+        if (l:cline[l:ccol-1:] =~ '\s*'.l:pair_matches[l:left_pair])
+            return "  \<left>"
+        else
+            return l:pair_matches[l:left_pair] . "\<left>"
+        endif
+    else
+        return " "
+    endif
+endfunction
+
+inoremap <expr> <silent> <cr> LogiPairCr()
+inoremap <expr> <silent> <space> LogiPairTab()
