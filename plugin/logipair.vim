@@ -14,8 +14,8 @@ function! LogiPairCr()
     let l:mps = split(&matchpairs, ',')
     " sort &matchpairs into a dict in l:pair_matches
     for l:mp in l:mps
-        let l:mp = split(l:mp, ':')
-        let l:pair_matches[l:mp[0]] = l:mp[1]
+        let l:smp = split(l:mp, ':')
+        let l:pair_matches[l:smp[0]] = l:smp[1]
     endfor
     " return <cr> if a left-pair not to left of cursor
     if !has_key(l:pair_matches, l:left_pair)
@@ -50,8 +50,8 @@ function! LogiPairTab()
     let l:mps = split(&matchpairs, ',')
     " sort &matchpairs into a dict in l:pair_matches
     for l:mp in l:mps
-        let l:mp = split(l:mp, ':')
-        let l:pair_matches[l:mp[0]] = l:mp[1]
+        let l:smp = split(l:mp, ':')
+        let l:pair_matches[l:smp[0]] = l:smp[1]
     endfor
     " return <tab> if a left-pair not to left of cursor
     " otherwise, return the closing pair
